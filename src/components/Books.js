@@ -1,25 +1,25 @@
 import React from 'react'
-import { observer } from 'mobx-react'
+import { observer, inject } from 'mobx-react'
 
-const Books = observer(({openBookPage, books}) => (
+const Books = inject('bookStore')(observer(({openBookPage, bookStore}) => (
   <section className="Page-books">
     <h1>Available books</h1>
     <ol>
+      {
+        bookStore.isLoading &&
+          <p>Loading</p>
+      }
       { 
-        books.case({
-          "pending":   () => "loading",
-          "rejected":  (e) => "error: " + e,
-          "fulfilled": (books) => books.map(book =>
-            <BookEntry
-              key={book.id}
-              book={book}
-              onClickEntry={openBookPage} />
-          )
-        }) 
+        bookStore.sortedBooks.map(book =>
+          <BookEntry
+            key={book.id}
+            book={book}
+            onClickEntry={openBookPage} />
+        )
       }
     </ol>
   </section>
-))
+)))
 
 const BookEntry = observer(({onClickEntry, book}) => (
   <li>

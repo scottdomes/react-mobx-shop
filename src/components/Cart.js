@@ -1,28 +1,31 @@
 import React from 'react'
+import { observer, inject } from 'mobx-react'
 import './Cart.css'
 
-const Cart = () => (
+const Cart = inject('cartStore', 'bookStore')(observer(({cartStore, bookStore}) => (
   <section className="Page-cart">
     <h2>Your cart</h2>
     <section className="Page-cart-items">
-      <div className="Page-cart-item">
-        <p><a href="#">Sophie's World : The Greek Philosophers</a></p>
-        <div className="Page-cart-item-details">
-          <p>Amount: <input value="2" /> total: <b>20 €</b></p>
-        </div>
-      </div>
-      <div className="Page-cart-item">
-        <p><a href="#">Sophie's World : The Greek Philosophers</a></p>
-        <div className="Page-cart-item-details">
-          <p>Amount: <input value="2" /> total: <b>20 €</b></p>
-        </div>
-      </div>
+      {
+        cartStore.orders.entries().map(entry => {
+          const book = bookStore.books.get(entry[0])
+          const amount = entry[1]
+          return (
+             <div className="Page-cart-item" key={book.id}>
+                <p><a href="#">{book.name}</a></p>
+                <div className="Page-cart-item-details">
+                  <p>Amount: <input value={amount} onChange={cartStore.changeBookAmount.bind(this, book)}/> total: <b>{amount * book.price} €</b></p>
+                </div>
+              </div>
+          )
+        })
+      }
     </section>
-    <p>Subtotal: 120 €</p>
-    <p><i>Large order discount: 12 €</i></p>
-    <p><b>Total: 108 €</b></p>
-    <button disabled="disabled">Submit order</button>
+    <p>Subtotal: {cartStore.total} €</p>
+    <p><i>Large order discount: {cartStore.discount} €</i></p>
+    <p><b>Total: {cartStore.total - cartStore.discount} €</b></p>
+    <button disabled={cartStore.total <= 0} onClick={cartStore.checkout}>Submit order</button>
   </section>
-)
+)))
 
 export default Cart

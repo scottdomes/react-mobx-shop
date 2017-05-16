@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import logo from '../logo.svg'
 import './App.css'
 
-import BookStore from "../stores/BookStore"
 import Books from "./Books"
 import BookDetails from "./BookDetails"
 import Cart from "./Cart"
@@ -32,7 +31,7 @@ class App extends Component {
   renderPage() {
     switch(this.state.page) {
       case "books":
-        return <Books openBookPage={this.openBookPage} books={BookStore.books}/>
+        return <Books openBookPage={this.openBookPage} />
       case "book":
         return <BookDetails book={this.state.selectedBook} />
       case "cart":

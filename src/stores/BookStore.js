@@ -1,22 +1,55 @@
-import { observable, action } from 'mobx'
-import { fromPromise } from 'mobx-utils'
+import {observable, computed, action} from "mobx"
 
-class BookStore {
-	@observable books
+class Book {
+    @observable id
+    @observable name
+    @observable author
+    @observable price
 
-	constructor() {
-		// Ensure that books is always fromPromise
-		this.requestBooks()
-	}
-
-	@action.bound requestBooks() {
-		this.books = fromPromise(
-        window.fetch("books.json")
-            .then(r => r.json())
-            .then(data => data)
-    )
-	}
+    constructor({id, name, author, price}) {
+        this.id = id
+        this.name = name
+        this.author = author
+        this.price = price
+    }
 }
 
-const store = new BookStore()
-export default store
+export default class BookStore {
+    @observable isLoading = false
+    books = observable.map()
+
+    constructor(fetch) {
+    	this.fetch = fetch
+      this.loadBooks()
+    }
+
+    @computed get sortedBooks() {
+      const books = this.books.values()
+      return books.sort((a, b) =>
+          a.name > b.name
+              ? 1
+              : a.name === b.name
+                  ? 0
+                  : -1
+      )
+    }
+
+    @action loadBooks() {
+        this.isLoading = true
+        this.fetch("books.json")
+            .then(json => {
+                this.updateBooks(json)
+                this.isLoading = false
+            })
+            .catch(err => {
+                console.error("Failed to load books ", err)
+            })
+    }
+
+    @action updateBooks(json) {
+        this.books.clear()
+        json.forEach(bookJson => {
+            this.books.set(bookJson.id, new Book(bookJson))
+        })
+    }
+}
