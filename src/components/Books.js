@@ -1,12 +1,16 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 
-const Books = observer(({openBookPage, books}) => (
+const Books = observer(({openBookPage, bookStore}) => (
   <section className="Page-books">
     <h1>Available books</h1>
     <ol>
       {
-        books.map(book => (
+        bookStore.loading &&
+          <p>Loading</p>
+      }
+      {
+        bookStore.books.map(book => (
           <BookEntry
               key={book.id}
               book={book}
