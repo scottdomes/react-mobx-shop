@@ -5,17 +5,25 @@ const Books = observer(({openBookPage, books}) => (
   <section className="Page-books">
     <h1>Available books</h1>
     <ol>
-      { 
-        books.case({
-          "pending":   () => "loading",
-          "rejected":  (e) => "error: " + e,
-          "fulfilled": (books) => books.map(book =>
-            <BookEntry
+      {
+        books.map(book => (
+          <BookEntry
               key={book.id}
               book={book}
               onClickEntry={openBookPage} />
-          )
-        }) 
+        ))
+      }
+      { 
+        // books.case && books.case({
+        //   "pending":   () => "loading",
+        //   "rejected":  (e) => "error: " + e,
+        //   "fulfilled": (books) => books.map(book =>
+        //     <BookEntry
+        //       key={book.id}
+        //       book={book}
+        //       onClickEntry={openBookPage} />
+        //   )
+        // }) 
       }
     </ol>
   </section>

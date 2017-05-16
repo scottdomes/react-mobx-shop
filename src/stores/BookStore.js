@@ -1,22 +1,29 @@
 import { observable, action } from 'mobx'
 import { fromPromise } from 'mobx-utils'
+import { types, onSnapshot } from "mobx-state-tree"
 
-class BookStore {
-	@observable books
+const Book = types.model('Book', {
+	id: types.string,
+	name: types.string
+})
 
-	constructor() {
-		// Ensure that books is always fromPromise
-		this.requestBooks()
+const BookStore = types.model('BookStore', {
+	books: types.array(Book)
+}, {
+	afterCreate() {
+		window.fetch("books.json")
+      .then(r => r.json())
+      .then(data => {
+      	this.addBooks(data)
+      })
+	},
+	addBooks(books) {
+		const arr = books.map(book => Book.create(book))
+		this.books.replace(arr)
 	}
+})
 
-	@action.bound requestBooks() {
-		this.books = fromPromise(
-        window.fetch("books.json")
-            .then(r => r.json())
-            .then(data => data)
-    )
-	}
-}
-
-const store = new BookStore()
+const store = BookStore.create({
+	books: []
+})
 export default store

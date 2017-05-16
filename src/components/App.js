@@ -30,6 +30,7 @@ class App extends Component {
   }
 
   renderPage() {
+    console.log(BookStore.books)
     switch(this.state.page) {
       case "books":
         return <Books openBookPage={this.openBookPage} books={BookStore.books}/>
