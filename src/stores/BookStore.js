@@ -7,9 +7,25 @@ const Book = types.model('Book', {
 	name: types.string
 })
 
+const parseMap = (collection, model, data) => {
+	data.forEach(item => {
+		collection.set(item.id, model.create(item))
+	})
+}
+
 const BookStore = types.model('BookStore', {
-	books: types.array(Book),
-	loading: types.boolean
+	books: types.map(Book),
+	loading: types.boolean,
+
+	get sorted() {
+    return this.books.values().sort((a, b) =>
+        a.name > b.name
+            ? 1
+            : a.name === b.name
+                ? 0
+                : -1
+    )
+  }
 }, {
 	afterCreate() {
 		this.setLoading(true)
@@ -21,8 +37,7 @@ const BookStore = types.model('BookStore', {
       })
 	},
 	addBooks(books) {
-		const arr = books.map(book => Book.create(book))
-		this.books.replace(arr)
+		parseMap(this.books, Book, books)
 	},
 	setLoading(state) {
 		this.loading = state
@@ -30,7 +45,7 @@ const BookStore = types.model('BookStore', {
 })
 
 const store = BookStore.create({
-	books: [],
+	books: {},
 	loading: false
 })
 export default store

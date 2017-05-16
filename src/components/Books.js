@@ -10,24 +10,12 @@ const Books = observer(({openBookPage, bookStore}) => (
           <p>Loading</p>
       }
       {
-        bookStore.books.map(book => (
+        bookStore.sorted.map(book => (
           <BookEntry
               key={book.id}
               book={book}
               onClickEntry={openBookPage} />
         ))
-      }
-      { 
-        // books.case && books.case({
-        //   "pending":   () => "loading",
-        //   "rejected":  (e) => "error: " + e,
-        //   "fulfilled": (books) => books.map(book =>
-        //     <BookEntry
-        //       key={book.id}
-        //       book={book}
-        //       onClickEntry={openBookPage} />
-        //   )
-        // }) 
       }
     </ol>
   </section>
