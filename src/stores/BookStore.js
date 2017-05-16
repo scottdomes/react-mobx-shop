@@ -8,6 +8,7 @@ const Book = types.model('Book', {
 })
 
 const parseMap = (collection, model, data) => {
+	collection.clear()
 	data.forEach(item => {
 		collection.set(item.id, model.create(item))
 	})
